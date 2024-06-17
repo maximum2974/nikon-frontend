@@ -20,6 +20,9 @@ dependencies:
   vue:
     specifier: ^3.4.21
     version: 3.4.29(typescript@5.4.5)
+  vue-router:
+    specifier: ^4.3.3
+    version: 4.3.3(vue@3.4.29)
 
 devDependencies:
   '@eslint/js':
@@ -2716,6 +2719,15 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /vue-router@4.3.3(vue@3.4.29):
+    resolution: {integrity: sha512-8Q+u+WP4N2SXY38FDcF2H1dUEbYVHVPtPCPZj/GTZx8RCbiB8AtJP9+YIxn4Vs0svMTNQcLIzka4GH7Utkx9xQ==, tarball: https://registry.npmmirror.com/vue-router/-/vue-router-4.3.3.tgz}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@vue/devtools-api': 6.6.3
+      vue: 3.4.29(typescript@5.4.5)
+    dev: false
 
   /vue-template-compiler@2.7.16:
     resolution: {integrity: sha512-AYbUWAJHLGGQM7+cNTELw+KsOG9nl2CnSv467WobS5Cv9uk3wFcnr1Etsz2sEIHEZvw1U+o9mRlEO6QbZvUPGQ==, tarball: https://registry.npmmirror.com/vue-template-compiler/-/vue-template-compiler-2.7.16.tgz}

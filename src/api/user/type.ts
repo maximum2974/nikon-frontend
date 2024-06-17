@@ -29,6 +29,3 @@ export interface loginResponseData extends ResponseData{
     }
 }
 
-export interface logoutResponseData extends ResponseData{
-    data: boolean;
-}

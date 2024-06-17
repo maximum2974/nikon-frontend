@@ -1,4 +1,4 @@
-import {loginData, loginResponseData, logoutResponseData, registerData, registerResponseData} from "./type.ts";
+import {loginData, loginResponseData, registerData, registerResponseData} from "./type.ts";
 import request from "../../utils/request.ts";
 
 
@@ -19,5 +19,5 @@ export const reqUserInfo = () =>
     request.get<any, loginResponseData>(API.USERINFO_URL);
 
 export const reqLogout = () =>
-    request.post<any, logoutResponseData>(API.LOGOUT_URL);
+    request.post<any, any>(API.LOGOUT_URL);
 
