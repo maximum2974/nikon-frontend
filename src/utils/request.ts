@@ -2,9 +2,11 @@ import axios from "axios";
 
 
 let request = axios.create({
-    baseURL: import.meta.env.VITE_APP_BASE_API,
+    baseURL: 'http://localhost:8080/api',
     timeout: 5000
 });
+
+request.defaults.withCredentials = true
 
 request.interceptors.request.use( (config) => {
     return config;

@@ -3,7 +3,7 @@ import {UserState} from "./types/type.ts";
 import {loginData, loginResponseData} from "../../api/user/type.ts";
 import {reqLogin, reqLogout, reqUserInfo} from "../../api/user";
 
-let useUserState = defineStore("User", {
+let useUserStore = defineStore("User", {
     state: (): UserState => {
         return {
             userName: '',
@@ -28,9 +28,7 @@ let useUserState = defineStore("User", {
             if(result.code === 0){
                 this.userName = result.data.userName;
                 this.userAccount = result.data.userAccount;
-                if(result.data.userAvatar != null){
-                    this.userAvatar = result.data.userAvatar;
-                }
+                this.userAvatar = result.data.userAvatar;
                 this.gender = result.data.gender;
                 this.userRole = result.data.userRole;
                 return "ok";
@@ -55,4 +53,4 @@ let useUserState = defineStore("User", {
     getters: {},
 });
 
-export default useUserState;
+export default useUserStore;
