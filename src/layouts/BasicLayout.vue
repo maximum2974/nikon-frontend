@@ -4,10 +4,10 @@
       <div class="topbar">
         <div class="nav">
           <ul>
-            <li>
+            <li v-if="!userStore.userAccount">
               <el-button type="text" @click="login">Login</el-button>
               <span class="sep">|</span>
-              <el-button type="text">Register</el-button>
+              <el-button type="text" @click="register">Register</el-button>
             </li>
             <li class="shopCart">
               <router-link to="/order">
@@ -17,9 +17,24 @@
             <li>
               <div>
                 <el-avatar
-                    src="https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/18d79b9565e4a74902aba4e845b8eabb61.png"
+                    :src="userStore.userAvatar || 'https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/18d79b9565e4a74902aba4e845b8eabb61.png'"
                 />
               </div>
+            </li>
+            <li v-if="userStore.userAccount">
+              <el-dropdown>
+                <span>
+                  {{userStore.userName}}
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="logout">Logout</el-dropdown-item>
+                  </el-dropdown-menu>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="info">Update Profiles</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </li>
           </ul>
         </div>
@@ -71,9 +86,11 @@
 <script setup lang="ts">
 import {computed} from "vue";
 import {useRoute, useRouter} from "vue-router";
+import useUserStore from "../store/modules/user.ts";
 
 let route = useRoute();
 let router = useRouter();
+let userStore = useUserStore();
 
 const activeIndex = computed(() => {
   if (route.path === "/") return "about-us";
@@ -90,6 +107,19 @@ const scrollToTop = () => {
 
 const login = () => {
   router.push('/login');
+}
+
+const register = () => {
+  router.push('/register');
+}
+
+const logout = async () => {
+  await userStore.userLogout();
+  router.push({ path: "/", query: { redirect: route.path } });
+}
+
+const info = () => {
+  router.push('/info');
 }
 </script>
 

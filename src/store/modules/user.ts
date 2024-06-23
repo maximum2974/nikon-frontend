@@ -13,11 +13,17 @@ let useUserStore = defineStore("User", {
             userRole: '',
         };
     },
+    persist: true,
     actions: {
         async userLogin(data: loginData) {
             const result: loginResponseData = await reqLogin(data);
             console.log(result);
             if(result.code === 0 && result.data){
+                this.userName = result.data.userName;
+                this.userAccount = result.data.userAccount;
+                this.userAvatar = result.data.userAvatar;
+                this.gender = result.data.gender;
+                this.userRole = result.data.userRole;
                 return "ok";
             } else {
                 return Promise.reject(new Error(result.message));

@@ -3,6 +3,8 @@ import HomePage from "../views/HomePage.vue";
 import OrderPage from "../views/OrderPage.vue";
 import ProductsPage from "../views/ProductsPage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
+import UpdateInfoPage from "../views/UpdateInfoPage.vue";
+import UpdateProductInfoPage from "../views/UpdateProductInfoPage.vue";
 
 
 export const constantRoutes = [
@@ -30,5 +32,15 @@ export const constantRoutes = [
         path: "/products",
         component: ProductsPage,
         name: "products"
+    },
+    {
+        path: "/info",
+        component: UpdateInfoPage,
+        name: "info"
+    },
+    {
+        path: "/update",
+        component: UpdateProductInfoPage,
+        name: "update"
     }
 ];

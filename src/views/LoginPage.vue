@@ -15,6 +15,7 @@
             <el-input
                 :prefix-icon="User"
                 v-model="loginForm.userAccount"
+                placeholder="Please enter userAccount"
             ></el-input>
           </el-form-item>
           <el-form-item prop="password">
@@ -23,6 +24,7 @@
                 :prefix-icon="Key"
                 v-model="loginForm.userPassword"
                 show-password
+                placeholder="Please enter password"
             ></el-input>
           </el-form-item>
           <el-form-item>
@@ -84,7 +86,7 @@ const login = async () => {
 };
 
 const validatorUserAccount = (rule: any, value: any, callback: any) => {
-  if(value.length >= 4){
+  if(value.length >= 5){
     callback();
   }else{
     callback(new Error("userAccount is at least five digits"));
@@ -95,7 +97,7 @@ const validatorPassword = (rule: any, value: any, callback: any) => {
   if(value.length >= 8){
     callback();
   } else{
-    callback(new Error("userPassword is at least five digits"));
+    callback(new Error("userPassword is at least eight digits"));
   }
 }
 
