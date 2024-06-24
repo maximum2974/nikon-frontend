@@ -28,10 +28,10 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="logout">Logout</el-dropdown-item>
+                    <el-dropdown-item @click="info">Profiles</el-dropdown-item>
                   </el-dropdown-menu>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="info">Update Profiles</el-dropdown-item>
+                    <el-dropdown-item @click="logout">Logout</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -79,23 +79,98 @@
           <el-icon><ArrowUp/></el-icon>
         </el-button>
       </div>
+      <el-dialog
+          v-model="dialogFormVisible"
+          title="User Information"
+      >
+        <el-form
+            style="padding-left: 40px;"
+            :model="userForm"
+            :rules="rules"
+            ref="formRef"
+        >
+          <el-form-item label="Username" label-width="150px" prop="userName">
+            <el-input v-model="userForm.userName"></el-input>
+          </el-form-item>
+          <el-form-item label="Account" label-width="150px">
+            <el-input v-model="userForm.userAccount" readonly></el-input>
+          </el-form-item>
+          <el-form-item label="Avatar" label-width="150px" prop="userAvatar">
+            <el-upload
+                class="avatar-uploader"
+                action="http://localhost:8080/api/upload"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload"
+                name="file"
+            >
+              <img
+                  v-if="userForm.userAvatar"
+                  :src="userForm.userAvatar"
+                  style="width: 100px; height: 100px; object-fit: cover;"
+              />
+              <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="Gender" label-width="150px" prop="gender">
+            <el-select v-model="userForm.gender" placeholder="Select gender">
+              <el-option label="Female" :value="1"></el-option>
+              <el-option label="Male" :value="0"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Role" label-width="150px">
+            <el-input v-model="userForm.userRole" readonly></el-input>
+          </el-form-item>
+        </el-form>
+        <!--具名插槽:footer-->
+        <template #footer>
+          <el-button type="primary" size="default" @click="cancel">Cancel</el-button>
+          <el-button type="primary" size="default" @click="confirm">Confirm</el-button>
+        </template>
+      </el-dialog>
     </el-container>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed, reactive, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import useUserStore from "../store/modules/user.ts";
+import {ElMessage, UploadProps} from "element-plus";
+import {reqUpdateUserInfo} from "../api/user";
+import {updateUserInfo, updateUserInfoResponseData} from "../api/user/type.ts";
 
 let route = useRoute();
 let router = useRouter();
 let userStore = useUserStore();
+let dialogFormVisible = ref<boolean>(false);
+let activeIndex = ref("");
+let userForm = ref({
+  userName: "",
+  userAccount: "",
+  userAvatar: "",
+  gender: 0,
+  userRole: "",
+});
+let updateUser = reactive<updateUserInfo>({
+  userName: "",
+  userAvatar: "",
+  gender: 0
+})
+let formRef = ref();
 
-const activeIndex = computed(() => {
-  if (route.path === "/") return "about-us";
-  if (route.path.startsWith("/products")) return "products";
+const initialActiveIndex = computed(() => {
+  if (route.path === "/") return "/";
+  if (route.path.startsWith("/products")) return "/products";
   return "";
+});
+
+activeIndex.value = initialActiveIndex.value;
+
+watch(route, (newRoute) => {
+  activeIndex.value = newRoute.path === "/" ? "/" :
+      newRoute.path.startsWith("/products") ? "/products" :
+          "";
 });
 
 const scrollToTop = () => {
@@ -118,8 +193,111 @@ const logout = async () => {
   router.push({ path: "/", query: { redirect: route.path } });
 }
 
-const info = () => {
-  router.push('/info');
+const info = async () => {
+  userForm.value.userName = userStore.userName;
+  userForm.value.userAccount = userStore.userAccount;
+  userForm.value.userAvatar = userStore.userAvatar;
+  userForm.value.gender = userStore.gender;
+  userForm.value.userRole = userStore.userRole;
+  dialogFormVisible.value = true;
+}
+
+const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
+  if (
+      rawFile.type === "image/png" ||
+      rawFile.type === "image/jpeg" ||
+      rawFile.type === "image/gif"
+  ) {
+    if (rawFile.size / 1024 / 1024 < 4) {
+      return true;
+    } else {
+      ElMessage({
+        type: "error",
+        message: "The uploaded file size must be less than 4MB",
+      });
+      return false;
+    }
+  } else {
+    ElMessage({
+      type: "error",
+      message: "The uploaded file format must be PNG, JPG, or GIF",
+    });
+    return false;
+  }
+};
+
+const handleAvatarSuccess: UploadProps["onSuccess"] = (
+    response,
+    uploadFile,
+) => {
+  userForm.value.userAvatar = response.data;
+  formRef.value.clearValidate("userAvatar");
+};
+
+const validatorUserAvatar = (rule: any, value: any, callBack: any) => {
+  if (value) {
+    callBack();
+  } else {
+    callBack(new Error("Please upload LOGO image"));
+  }
+};
+
+const validatorUserName = (rule: any, value: any, callBack: any) => {
+  if (value && value.length > 4) {
+    callBack();
+  } else {
+    callBack(new Error("Username must be longer than 4 characters"));
+  }
+};
+
+const validatorGender = (rule: any, value: any, callBack: any) => {
+  if (value === 0 || value === 1) {
+    callBack();
+  } else {
+    callBack(new Error("Gender must be 0 or 1"));
+  }
+};
+
+const rules = {
+  userName: [
+    {required: true, trigger: 'blur', validator: validatorUserName}
+  ],
+  userAvatar: [
+    {required: true,validator: validatorUserAvatar}
+  ],
+  gender: [
+    {required: true, validator: validatorGender}
+  ]
+}
+
+const cancel = () => {
+  dialogFormVisible.value = false;
+}
+
+const confirm = async () => {
+  await formRef.value.validate();
+  console.log("userForm.value.userName:", userForm.value.userName);
+  console.log("userForm.value.userAvatar:", userForm.value.userAvatar);
+  console.log("userForm.value.gender:", userForm.value.gender);
+  updateUser.userName = userForm.value.userName;
+  updateUser.userAvatar = userForm.value.userAvatar;
+  updateUser.gender = userForm.value.gender;
+  console.log(updateUser)
+  let result: updateUserInfoResponseData = await reqUpdateUserInfo(updateUser);
+  if(result.code === 0){
+    dialogFormVisible.value = false;
+    ElMessage({
+      type: "success",
+      message: "User information updated successfully"
+    });
+    router.go(0);
+  }else{
+    ElMessage({
+      type: "error",
+      message: "ailed to update user information"
+    })
+  }
+  dialogFormVisible.value = false;
 }
 </script>
 

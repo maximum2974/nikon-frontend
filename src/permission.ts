@@ -1,27 +1,39 @@
 import useUserStore from "./store/modules/user.ts";
 import pinia from "./store";
 import router from "./router";
+import {GET_USERROLE} from "./utils/userRole.ts";
 
 let userStore = useUserStore(pinia);
-router.beforeEach(async (to: any, _from: any, next: any) => {
-    let userAccount: string = userStore.userAccount;
-    let userRole: string = userStore.userRole;
-    let requiresAuth = ['/order', '/info', '/update'];
-    let requiresAdmin = ['/update'];
-    console.log('Navigating to:', to.path);
-    console.log('User Account:', userAccount);
-    console.log('User Role:', userRole);
-    if (userAccount && (to.path === '/login' || to.path === '/register')) {
-        next({ path: '/' });
-    } else if (requiresAuth.includes(to.path)) {
-        if (!userAccount) {
-            next({ path: '/login' });
-        } else if (requiresAdmin.includes(to.path) && userRole !== 'admin') {
-            next({ path: '/' });
-        } else {
+
+router.beforeEach(async (to, _from, next) => {
+    let getUserRole = GET_USERROLE();
+    if(getUserRole){
+        if(to.path == "/login" || to.path == "/register"){
+            next({ path: "/" });
+        }else{
+            try{
+                await userStore.userInfo();
+                if(to.path !== "/update" && to.path !== "/order"){
+                    next();
+                }else if(to.path === "/update" && userStore.userRole === "admin"){
+                    next();
+                }else if(to.path === "/order" && userStore.userRole === "user"){
+                    next();
+                }else{
+                    next({ path: "/" });
+                }
+            }catch (error){
+                await userStore.userLogout();
+                next({ path: "/login", query: { redirect: to.path } });
+            }
+        }
+    }else{
+        if(to.path == "/login" || to.path == "/register"){
+            next();
+        }else if(to.path == "/update" || to.path == "/order"){
+            next({ path: "/login", query: { redirect: to.path } });
+        }else{
             next();
         }
-    } else {
-        next();
     }
 });

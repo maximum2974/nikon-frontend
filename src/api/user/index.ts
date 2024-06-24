@@ -1,4 +1,11 @@
-import {loginData, loginResponseData, registerData, registerResponseData} from "./type.ts";
+import {
+    loginData,
+    loginResponseData,
+    registerData,
+    registerResponseData,
+    updateUserInfo,
+    updateUserInfoResponseData
+} from "./type.ts";
 import request from "../../utils/request.ts";
 
 
@@ -7,6 +14,7 @@ enum API {
     LOGIN_URL = "/user/login",
     USERINFO_URL = "/user/get/login",
     LOGOUT_URL = "/user/logout",
+    UPDATEUSERINFO_URL = "/user/update",
 }
 
 export const reqRegister = (data: registerData) =>
@@ -21,3 +29,5 @@ export const reqUserInfo = () =>
 export const reqLogout = () =>
     request.post<any, any>(API.LOGOUT_URL);
 
+export const reqUpdateUserInfo = (data: updateUserInfo) =>
+    request.post<any, updateUserInfoResponseData>(API.UPDATEUSERINFO_URL, data);

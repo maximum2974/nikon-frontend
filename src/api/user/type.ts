@@ -29,3 +29,12 @@ export interface loginResponseData extends ResponseData{
     }
 }
 
+export interface updateUserInfo {
+    userName : string,
+    userAvatar: string,
+    gender: number,
+}
+
+export interface updateUserInfoResponseData extends ResponseData{
+    data: boolean | null;
+}

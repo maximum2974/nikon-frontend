@@ -60,10 +60,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import {ref} from "vue";
 import {useRouter} from "vue-router";
-const router = useRouter();
-const images = ref([
+let router = useRouter();
+let images = ref([
   'src/assets/home/1.jpg',
   'src/assets/home/2.jpg',
   'src/assets/home/3.jpg',
