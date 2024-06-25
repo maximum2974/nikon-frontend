@@ -51,13 +51,13 @@
             :rules="rules"
             ref="formRef"
         >
-          <el-form-item label="Name" label-width="150px">
+          <el-form-item label="Name" label-width="170px">
             <el-input v-model="currentProduct.productName" readonly></el-input>
           </el-form-item>
-          <el-form-item label="Product Image" label-width="150px">
+          <el-form-item label="Product Image" label-width="170px">
             <img :src="currentProduct.productUrl" alt="Product Image" style="width: 100px; height: 100px; object-fit: cover;" />
           </el-form-item>
-          <el-form-item label="Quantity" label-width="150px" prop="quantity">
+          <el-form-item label="Quantity" label-width="170px" prop="quantity">
             <el-select v-model="purchaseProductsParams.quantity" placeholder="Please choose quantity">
               <el-option
                   v-for="n in currentProduct.quantity"
@@ -67,19 +67,19 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="Credit Card Number" label-width="150px" prop="creditCardNumber">
+          <el-form-item label="Credit Card Number" label-width="170px" prop="creditCardNumber">
             <el-input
                 placeholder="Enter your credit card number (13-16 digits)"
                 v-model="purchaseProductsParams.creditCardNumber"
             ></el-input>
           </el-form-item>
-          <el-form-item label="Email" label-width="150px" prop="email">
+          <el-form-item label="Email" label-width="170px" prop="email">
             <el-input
                 placeholder="Enter your email address"
                 v-model="purchaseProductsParams.email"
             ></el-input>
           </el-form-item>
-          <el-form-item label="Shipping Address" label-width="150px" prop="shippingAddress">
+          <el-form-item label="Shipping Address" label-width="170px" prop="shippingAddress">
             <el-input
                 placeholder="Enter your shipping address"
                 v-model="purchaseProductsParams.shippingAddress"
@@ -88,10 +88,10 @@
         </el-form>
         <!--具名插槽:footer-->
         <template #footer>
-          <el-button type="primary" size="default" @click="cancel"
+          <el-button type="primary" size="default" @click="cancel" class="black-button"
           >cancel</el-button
           >
-          <el-button type="primary" size="default" @click="confirm"
+          <el-button type="primary" size="default" @click="confirm" class="black-button"
           >confirm</el-button
           >
         </template>
@@ -330,5 +330,15 @@ const rules = {
   border: 1px dashed;
   box-shadow: 0 0 0 3px #57DD43, 0px 21px 5px -18px rgba(0, 0, 0, 0.6);
   background: #57DD43;
+}
+
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+  background-color: #000000 !important;
+}
+
+.black-button {
+  background-color: black !important;
+  border-color: black !important;
+  color: white !important;
 }
 </style>

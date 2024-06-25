@@ -43,6 +43,12 @@
         <template #header>
           <div class="card-header">
             <span>Our Story</span>
+            <el-button
+                type="primary"
+                class="black-button"
+                @click="openContactDialog"
+                style="margin-left: 400px;"
+            >Contact Us</el-button>
           </div>
         </template>
         <p class="card-paragraph">Founded in 2003, Maximum company began with a passion for photography and a vision to bring the best imaging technology to the Malaysian market. Our journey started as a small, dedicated team of photography aficionados, and over the years, we have grown into a reputable dealer with a robust presence in the industry.</p>
@@ -51,17 +57,66 @@
         <template #header>
           <div class="card-header">
             <span>Our Mission</span>
+            <el-button type="primary" class="black-button" @click="giveFeedback" style="margin-left: 380px;">Feedback</el-button>
           </div>
         </template>
         <p class="card-paragraph">At Maximum, our mission is to inspire creativity and empower photographers by providing access to cutting-edge Nikon products. We strive to be more than just a retailer; we aim to be a source of inspiration, knowledge, and support for our customers.</p>
       </el-card>
     </div>
+    <el-dialog
+        title="Contact Us"
+        v-model="contactDialogVisible"
+        class="contact-dialog"
+    >
+      <div class="contact-details">
+        <p>Phone: 173 427 840</p>
+        <p>Email: swe2209532@xmu.edu.my</p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button class="black-button" @click="contactDialogVisible = false">Close</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+        title="Feedback"
+        v-model="feedbackDialogVisible"
+        class="feedback-dialog"
+    >
+      <div class="feedback-form">
+        <el-form
+            :rules="rules"
+            ref="formRef"
+            :model="feedback"
+            label-width="80px">
+          <el-form-item label="Email" prop="email">
+            <el-input v-model="feedback.email"></el-input>
+          </el-form-item>
+          <el-form-item label="Subject" prop="subject">
+            <el-input v-model="feedback.subject"></el-input>
+          </el-form-item>
+          <el-form-item label="Content" prop="content">
+            <el-input type="textarea" v-model="feedback.content" :rows="8"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <el-button class="black-button" type="primary" size="default" @click="cancel"
+        >cancel</el-button
+        >
+        <el-button class="black-button" type="primary" size="default" @click="confirm"
+        >confirm</el-button
+        >
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import {useRouter} from "vue-router";
+import {nextTick, reactive, ref} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {ElMessage} from "element-plus";
+import useUserStore from "../store/modules/user.ts";
+import {FeedbackRequestData, FeedbackResponseData} from "../api/feedback/type.ts";
+import {reqFeedback} from "../api/feedback";
 let router = useRouter();
 let images = ref([
   'src/assets/home/1.jpg',
@@ -70,9 +125,89 @@ let images = ref([
   'src/assets/home/4.jpg',
   'src/assets/home/5.jpg',
 ]);
-
+let formRef = ref();
+let contactDialogVisible = ref(false);
+let feedbackDialogVisible = ref(false);
+let route = useRoute();
+let useStore = useUserStore();
+let feedback = reactive<FeedbackRequestData>({
+  email: "",
+  subject: "",
+  content: ""
+});
 const navigateTo = () => {
   router.push({path: '/products'});
+}
+const openContactDialog = () => {
+  contactDialogVisible.value = true;
+};
+const giveFeedback = async () => {
+  if (useStore.userRole === "admin") {
+    ElMessage.error('You are an admin and cannot make a feedback.');
+    return;
+  } else if (!useStore.userRole) {
+    await router.push({ path: '/login', query: { redirect: route.fullPath } });
+    return;
+  }
+  nextTick(() => {
+    formRef.value.clearValidate("content");
+    formRef.value.clearValidate("subject");
+    formRef.value.clearValidate("email");
+  })
+  feedback.email = "";
+  feedback.subject = "";
+  feedback.content = "";
+  feedbackDialogVisible.value = true;
+}
+
+const validatorEmail = (rule: any, value: any, callBack: any) => {
+  let regex = /^\s*\w+(?:\.{0,1}[\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\.[a-zA-Z]+\s*$/;
+  if (!regex.test(value)) {
+    callBack(new Error('Invalid email address'));
+  }
+  callBack();
+};
+
+const validatorSubject = (rule: any, value: any, callBack: any) => {
+  if (!value) {
+    callBack(new Error('Subject is required'));
+  }
+  callBack();
+};
+
+const validatorContent = (rule: any, value: any, callBack: any) => {
+  if (!value) {
+    callBack(new Error('Content is required'));
+  }
+  callBack();
+};
+
+const rules = {
+  email: [{required: true , validator: validatorEmail, trigger: 'blur' }],
+  subject: [{required: true , validator: validatorSubject, trigger: 'blur' }],
+  content: [{required: true , validator: validatorContent, trigger: 'blur' }],
+}
+
+const cancel = () => {
+  feedbackDialogVisible.value = false;
+}
+
+const confirm = async () => {
+  await formRef.value.validate();
+  let result: FeedbackResponseData = await reqFeedback(feedback);
+  if (result.code === 0) {
+    feedbackDialogVisible.value = false;
+    ElMessage({
+      type: "success",
+      message: "Feedback send successfully! Please check your email."
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: result.message,
+    });
+    feedbackDialogVisible.value = false;
+  }
 }
 </script>
 
@@ -184,5 +319,23 @@ const navigateTo = () => {
   flex: 1 1 calc(50% - 16px);
   max-width: calc(50% - 16px);
   box-sizing: border-box;
+}
+
+.black-button {
+  background-color: black !important;
+  border-color: black !important;
+  color: white !important;
+}
+
+.contact-dialog .contact-details {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0;
+  text-align: left;
+  padding-bottom: 30px;
+}
+
+.contact-dialog .dialog-footer {
+  text-align: right;
 }
 </style>

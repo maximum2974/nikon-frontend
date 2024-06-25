@@ -4,6 +4,8 @@ import OrderPage from "../views/OrderPage.vue";
 import ProductsPage from "../views/ProductsPage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
 import UpdateProductInfoPage from "../views/UpdateProductInfoPage.vue";
+import NotFoundPage from "../views/NotFoundPage.vue";
+import PutawayProductInfoPage from "../views/PutawayProductInfoPage.vue";
 
 
 export const constantRoutes = [
@@ -36,5 +38,15 @@ export const constantRoutes = [
         path: "/update",
         component: UpdateProductInfoPage,
         name: "update"
-    }
+    },
+    {
+        path: "/putaway",
+        component: PutawayProductInfoPage,
+        name: "putaway"
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        component: NotFoundPage,
+        name: 'not-found'
+    },
 ];

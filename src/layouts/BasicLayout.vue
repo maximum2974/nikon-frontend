@@ -9,9 +9,19 @@
               <span class="sep">|</span>
               <el-button type="text" @click="register">Register</el-button>
             </li>
-            <li class="shopCart">
+            <li v-if="userStore.userRole !== 'admin'" class="shopCart">
               <router-link to="/order">
                 <i class="el-icon-shopping-cart-full"></i>Order
+              </router-link>
+            </li>
+            <li v-if="userStore.userRole === 'admin'" class="shopCart">
+              <router-link to="/putaway">
+                <i class="el-icon-shopping-cart-full"></i>Putaway
+              </router-link>
+            </li>
+            <li v-if="userStore.userRole === 'admin'" class="shopCart">
+              <router-link to="/update">
+                <i class="el-icon-shopping-cart-full"></i>Update
               </router-link>
             </li>
             <li>
@@ -68,7 +78,6 @@
           <a href="#">Social Media Accounts</a>
         </div>
         <div class="footer-bottom">
-          <a href="#">Contacts</a>
           <a href="#">Privacy Management</a>
           <a href="#">Website Privacy Notice</a>
           <a href="#">Terms of Use</a>
@@ -124,8 +133,8 @@
         </el-form>
         <!--具名插槽:footer-->
         <template #footer>
-          <el-button type="primary" size="default" @click="cancel">Cancel</el-button>
-          <el-button type="primary" size="default" @click="confirm">Confirm</el-button>
+          <el-button type="primary" size="default" @click="cancel" class="black-button">Cancel</el-button>
+          <el-button type="primary" size="default" @click="confirm" class="black-button">Confirm</el-button>
         </template>
       </el-dialog>
     </el-container>
@@ -440,5 +449,11 @@ a:hover {
   position: fixed;
   bottom: 20px;
   right: 20px;
+}
+
+.black-button {
+  background-color: black !important;
+  border-color: black !important;
+  color: white !important;
 }
 </style>
