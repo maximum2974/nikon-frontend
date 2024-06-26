@@ -23,7 +23,7 @@ router.beforeEach(async (to, _from, next) => {
             next();
         }
     } catch (error) {
-        if (to.path !== "/login") {
+        if (to.path === "/update" || to.path === "/putaway" || to.path === "/order") {
             next({ path: "/login", query: { redirect: to.path } });
         } else {
             next();
