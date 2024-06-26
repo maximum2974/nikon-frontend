@@ -119,11 +119,11 @@ import {FeedbackRequestData, FeedbackResponseData} from "../api/feedback/type.ts
 import {reqFeedback} from "../api/feedback";
 let router = useRouter();
 let images = ref([
-  'src/assets/home/1.jpg',
-  'src/assets/home/2.jpg',
-  'src/assets/home/3.jpg',
-  'src/assets/home/4.jpg',
-  'src/assets/home/5.jpg',
+  'https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/26d8474f120a1b4efa8eb97622a95dbb13.jpg',
+  'https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/268982f05133f44805b133493394fcd4f0.jpg',
+  'https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/26bd08f7aff58a423a8af5226f9bab166f.jpg',
+  'https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/267ace054b4c334abc910a71123e5bf928.jpg',
+  'https://cdn.jsdelivr.net/gh/maximum2974/image/2024/06/2637804fe531254337bd12a4b2b29c2c4a.jpg',
 ]);
 let formRef = ref();
 let contactDialogVisible = ref(false);
