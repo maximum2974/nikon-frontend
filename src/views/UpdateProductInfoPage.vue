@@ -65,7 +65,7 @@
         <el-form-item label="Product Image" label-width="170px" prop="productUrl">
           <el-upload
               class="uploader"
-              action="http://45.145.228.53:8080/api/upload"
+              action="http://45.145.228.53:80/api/upload"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
